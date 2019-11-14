@@ -21,6 +21,7 @@ import functools
 import logging
 import os
 import random
+from pathlib import Path
 import sys
 
 import numpy as np
@@ -41,6 +42,7 @@ from transformers.generate import BeamSearch
 
 from utils_summarization import (
     CNNDailyMailDataset,
+    Lp2CreativeDataset,
     encode_for_summarization,
     fit_to_block_size,
     build_lm_labels,
@@ -64,7 +66,8 @@ def set_seed(args):
 
 
 def load_and_cache_examples(args, tokenizer):
-    dataset = CNNDailyMailDataset(args.data_dir)
+    # dataset = CNNDailyMailDataset(args.data_dir)
+    dataset = Lp2CreativeDataset(args.data_dir)
     return dataset
 
 
@@ -361,7 +364,7 @@ def main():
     parser.add_argument(
         "--data_dir",
         default=None,
-        type=str,
+        type=Path,
         required=True,
         help="The input training data file (a text file).",
     )
@@ -382,15 +385,13 @@ def main():
     )
     parser.add_argument(
         "--do_evaluate",
-        type=bool,
-        default=False,
+        action='store_true',
         help="Run model evaluation on out-of-sample data.",
     )
-    parser.add_argument("--do_train", type=bool, default=False, help="Run training.")
+    parser.add_argument("--do_train", action='store_true', help="Run training.")
     parser.add_argument(
         "--do_overwrite_output_dir",
-        type=bool,
-        default=False,
+        action='store_true',
         help="Whether to overwrite the output dir.",
     )
     parser.add_argument(
@@ -415,7 +416,7 @@ def main():
         help="If > 0: set total number of training steps to perform. Override num_train_epochs.",
     )
     parser.add_argument(
-        "--to_cpu", default=False, type=bool, help="Whether to force training on CPU."
+        "--to_cpu", action='store_true', help="Whether to force training on CPU."
     )
     parser.add_argument(
         "--num_train_epochs",
@@ -533,7 +534,8 @@ def create_evaluation_set(args, path_to_formatted_summaries):
     if not os.path.exists(path_to_formatted_summaries):
         os.makedirs(path_to_formatted_summaries)
 
-    dataset = CNNDailyMailDataset(args.data_dir)
+    # dataset = CNNDailyMailDataset(args.data_dir)
+    dataset = Lp2CreativeDataset(args.data_dir)
     for i, (_, summary_lines) in enumerate(dataset):
         with open(
             path_to_formatted_summaries + "/original_{}.txt".format(i), "w"

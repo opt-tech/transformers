@@ -139,3 +139,7 @@ serialization_dir
 # emacs
 *.*~
 debug.env
+
+/dataset/*
+/dataset_small/*
+/output/*
