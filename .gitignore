@@ -144,6 +144,7 @@ debug.env
 /dataset/*
 /dataset_small/*
 /output/*
+!/output/.gitkeep
 /archive/*
 /notebook/*
 /model/*
