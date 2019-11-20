@@ -20,20 +20,23 @@ def load_jsonl(path: Path) -> List[Dict[str, Any]]:
 
 
 class Lp2CreativeDataset(Dataset):
-    def __init__(self, data_dir):
+    def __init__(self, data_dir, tokenizer):
         assert os.path.isdir(data_dir)
 
         train = load_jsonl(data_dir / 'train/train.jsonl')
         val = load_jsonl(data_dir / 'val/val.jsonl')
         test = load_jsonl(data_dir / 'test/test.jsonl')
 
-        self.data = train + val + test
+        data = train + val + test
+
+        # For transformer
+        self.data = list(filter(lambda d: len(d['source']) <= 512, data))
 
     def __len__(self):
         return len(self.data)
 
     def __getitem__(self, idx):
-        source = self.data[idx]['source'].split('。')
+        source = [self.data[idx]['source']]
         target = [self.data[idx]['target']]
 
         return source, target

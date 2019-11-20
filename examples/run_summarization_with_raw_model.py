@@ -75,7 +75,7 @@ def set_seed(args):
 
 def load_and_cache_examples(args, tokenizer):
     # dataset = CNNDailyMailDataset(args.data_dir)
-    dataset = Lp2CreativeDataset(args.data_dir)
+    dataset = Lp2CreativeDataset(args.data_dir, tokenizer)
     return dataset
 
 
