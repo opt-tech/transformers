@@ -24,8 +24,6 @@ from torch import nn
 
 from .modeling_auto import AutoModel, AutoModelWithLMHead
 
-from .util.common import mkdir_if_exists
-
 logger = logging.getLogger(__name__)
 
 
