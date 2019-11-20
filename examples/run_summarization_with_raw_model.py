@@ -115,28 +115,24 @@ def collate(data, tokenizer, block_size):
 
 
 class Config:
-    def __init__(self, model_name_or_path, vocab_size):
-        config = BertConfig.from_pretrained(model_name_or_path)
+    def __init__(self, config_path, vocab_size):
+        config = BertConfig.from_json_file(config_path)
         config.vocab_size = vocab_size
-        config.hidden_dropout_prob = 0.2
-        config.attention_probs_dropout_prob = 0.2
-        config.num_hidden_layers = 1
-        config.num_attention_heads = 8
 
-        self.encoder_config_ = copy.deepcopy(config)
-        self.encoder_config_.output_hidden_states = True
-        self.encoder_config_.is_decoder = False
+        self._encoder_config = copy.deepcopy(config)
+        self._encoder_config.output_hidden_states = True
+        self._encoder_config.is_decoder = False
 
-        self.decoder_config_ = copy.deepcopy(config)
-        self.decoder_config_.is_decoder = True
+        self._decoder_config = copy.deepcopy(config)
+        self._decoder_config.is_decoder = True
 
     @property
     def encoder_config(self):
-        return self.encoder_config_
+        return self._encoder_config
 
     @property
     def decoder_config(self):
-        return self.decoder_config_
+        return self._decoder_config
 
 
 # ----------
@@ -420,6 +416,13 @@ def main():
         required=True,
         help="The path to a pre-trained sentencepiece model trained with Japanese language.",
     )
+    parser.add_argument(
+        "--bert_config",
+        default=None,
+        type=str,
+        required=True,
+        help="The path to a BERT config file."
+    )
 
     # Optional parameters
     parser.add_argument(
@@ -525,7 +528,7 @@ def main():
     # The dropout values for the decoder were taken from Liu & Lapata's repository
     tokenizer = BertJapaneseTokenizer(os.path.join(args.pretrained_sentencepiece_model_ja, SENTNCEPIECE_MODEL_NAME), os.path.join(args.pretrained_sentencepiece_model_ja, SENTENCEPIECE_VOCAB_NAME), do_lower_case=True)
 
-    config = Config(args.model_name_or_path, tokenizer.vocab_size)
+    config = Config(args.bert_config, tokenizer.vocab_size)
 
     if args.pretrained_encoder_decoder_model:
         print(f'load pre-trained encoder-decoder model...')
