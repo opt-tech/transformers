@@ -213,6 +213,9 @@ def train(args, model, tokenizer):
         collate_fn=model_collate_fn,
     )
 
+    print(f'dataset sample 0: {train_dataset[0]}')
+    print(f'dataset sample 1: {train_dataset[1]}')
+
     # Training schedule
     if args.max_steps > 0:
         t_total = args.max_steps
@@ -227,7 +230,7 @@ def train(args, model, tokenizer):
         )
 
     # Prepare the optimizer
-    lr = {"encoder": 0.002, "decoder": 0.2}
+    lr = {"encoder": args.encoder_lr, "decoder": args.decoder_lr}
     warmup_steps = {"encoder": 20000, "decoder": 10000}
     optimizer = BertSumOptimizer(model, lr, warmup_steps)
 
@@ -425,6 +428,18 @@ def main():
     )
 
     # Optional parameters
+    parser.add_argument(
+        "--encoder_lr",
+        default=0.002,
+        type=float,
+        help="Learning rate for encoder.",
+    )
+    parser.add_argument(
+        "--decoder_lr",
+        default=0.2,
+        type=float,
+        help="Learning rate for decoder.",
+    )
     parser.add_argument(
         "--pretrained_bert_model",
         default=None,
