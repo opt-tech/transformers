@@ -139,3 +139,14 @@ serialization_dir
 # emacs
 *.*~
 debug.env
+
+# private
+/dataset/*
+/dataset_small/*
+/output/*
+/archive/*
+/notebook/*
+/model/*
+!/model/.gitkeep
+!/model/README.md
+

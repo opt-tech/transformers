@@ -24,7 +24,61 @@ from torch import nn
 
 from .modeling_auto import AutoModel, AutoModelWithLMHead
 
+from .util.common import mkdir_if_exists
+
 logger = logging.getLogger(__name__)
+
+
+# class EncoderDecoder(nn.Module):
+#     def __init__(self, encoder, decoder):
+#         super().__init__()
+#         self.encoder = encoder
+#         self.decoder = decoder
+
+#     def save_pretrained(self, save_directory, model_type="bert"):
+#         def _save(path, model):
+#             # XXX: modelの型は？save_pretrainedを持つクラスの型が不明
+#             mkdir_if_exists(path)
+#             # modeling_utils.PreTrainedModel.save_pretrained
+#             model.save_pretrained(path)
+
+#         encoder_path = os.path.join(save_directory, f'{model_type}_encoder')
+#         _save(encoder_path, self.encoder)
+
+#         decoder_path = os.path.join(save_directory, f'{model_type}_decoder')
+#         _save(decoder_path, self.decoder)
+
+#     def forward(self, encoder_input_ids, decoder_input_ids, **kwargs):
+#         """
+#         The forward pass on a seq2seq depends what we are performing.
+#         """
+#         def _make_kwargs(kw: Dict[str, Any], prefix: str) -> Dict[str, Any]:
+#             new_kws = kw.copy()
+#             new_kws.update({arg[len(prefix):]: v for arg, v in kw.items() if arg.startswith(prefix)})
+#             return new_kws
+
+#         kwargs_common = {
+#             arg: v for arg, v in kwargs.items() if not arg.startswith('encoder_')  and not arg.startswith('decoder_')
+#         }
+
+#         kwargs_encoder = _make_kwargs(kwargs_common, 'encoder_')
+#         kwargs_decoder = _make_kwargs(kwargs_common, 'decoder_')
+
+#         # encode if needed
+#         # keywordにhidden_statesが存在する場合、encoder_outputsにself.encoderが返す値を格納してforwardの返り値に入れる
+#         encoder_hidden_states = kwargs_encoder.pop('hidden_states', None)
+#         if encoder_hidden_states is None:
+#             encoder_outputs = self.encoder(encoder_input_ids, **kwargs_encoder)
+#             encoder_hidden_states = encoder_outputs[0]  # output the last layer hidden state
+#         else:
+#             encoder_outputs = ()  # ???
+
+#         # decode
+#         kwargs_decoder['encoder_hidden_states'] = encoder_hidden_states
+#         kwargs_decoder['encoder_attention_mask'] = kwargs_encoder.get('attention_mask', None)
+#         decoder_outputs = self.decoder(decoder_input_ids, **kwargs_decoder)
+
+#         return decoder_outputs + encoder_outputs
 
 
 class PreTrainedEncoderDecoder(nn.Module):

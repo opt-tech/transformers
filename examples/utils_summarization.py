@@ -1,5 +1,8 @@
 from collections import deque
+import json
 import os
+from pathlib import Path
+from typing import List, Any, Dict
 
 import torch
 from torch.utils.data import Dataset
@@ -8,6 +11,32 @@ from torch.utils.data import Dataset
 # ------------
 # Data loading
 # ------------
+
+
+def load_jsonl(path: Path) -> List[Dict[str, Any]]:
+    with open(path, 'r') as f:
+        jsonl = [json.loads(line) for line in f]
+    return jsonl
+
+
+class Lp2CreativeDataset(Dataset):
+    def __init__(self, data_dir):
+        assert os.path.isdir(data_dir)
+
+        train = load_jsonl(data_dir / 'train/train.jsonl')
+        val = load_jsonl(data_dir / 'val/val.jsonl')
+        test = load_jsonl(data_dir / 'test/test.jsonl')
+
+        self.data = train + val + test
+
+    def __len__(self):
+        return len(self.data)
+
+    def __getitem__(self, idx):
+        source = self.data[idx]['source'].split('。')
+        target = [self.data[idx]['target']]
+
+        return source, target
 
 
 class CNNDailyMailDataset(Dataset):

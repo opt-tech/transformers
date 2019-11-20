@@ -1,0 +1,27 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pytest = "*"
+flake8 = "*"
+mypy = "*"
+jupyter = "*"
+environment-kernels = "*"
+
+[packages]
+torch = "==1.2.0"
+tqdm = "*"
+ipython = "*"
+numpy = "*"
+boto3 = "*"
+requests = "*"
+regex = "*"
+sentencepiece = "*"
+sacremoses = "*"
+sklearn = "*"
+tensorflow = "*"
+
+[requires]
+python_version = "3.6"

@@ -673,7 +673,7 @@ class BertModel(BertPreTrainedModel):
             if self.config.is_decoder:
                 batch_size, seq_length = input_shape
                 seq_ids = torch.arange(seq_length, device=device)
-                causal_mask = seq_ids[None, None, :].repeat(batch_size, seq_length, 1) <= seq_ids[None, :, None]
+                causal_mask = (seq_ids[None, None, :].repeat(batch_size, seq_length, 1) <= seq_ids[None, :, None]).to(torch.long)
                 extended_attention_mask = causal_mask[:, None, :, :] * attention_mask[:, None, None, :]
             else:
                 extended_attention_mask = attention_mask[:, None, None, :]
@@ -1218,9 +1218,9 @@ class BertForQuestionAnswering(BertPreTrainedModel):
         question, text = "Who was Jim Henson?", "Jim Henson was a nice puppet"
         input_text = "[CLS] " + question + " [SEP] " + text + " [SEP]"
         input_ids = tokenizer.encode(input_text)
-        token_type_ids = [0 if i <= input_ids.index(102) else 1 for i in range(len(input_ids))] 
+        token_type_ids = [0 if i <= input_ids.index(102) else 1 for i in range(len(input_ids))]
         start_scores, end_scores = model(torch.tensor([input_ids]), token_type_ids=torch.tensor([token_type_ids]))
-        all_tokens = tokenizer.convert_ids_to_tokens(input_ids)  
+        all_tokens = tokenizer.convert_ids_to_tokens(input_ids)
         print(' '.join(all_tokens[torch.argmax(start_scores) : torch.argmax(end_scores)+1]))
         # a nice puppet
 
