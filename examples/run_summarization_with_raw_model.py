@@ -252,9 +252,9 @@ def train(args, model, tokenizer):
 
     global_step = 0
     tr_loss = 0.0
-    for _ in train_iterator:
-        epoch_iterator = tqdm(train_dataloader, desc="Iteration", disable=True)
-        for step, batch in enumerate(epoch_iterator):
+    for epoch in train_iterator:
+        step_iterator = tqdm(train_dataloader, desc="Iteration")
+        for step, batch in enumerate(step_iterator):
             source, target, encoder_token_type_ids, encoder_mask, decoder_mask, lm_labels = (
                 batch
             )
@@ -277,7 +277,8 @@ def train(args, model, tokenizer):
             )
 
             loss = outputs[0]
-            logger.info("Current loss: {:.2f}".format(loss.item()))
+            # logger.info(f"Epoch: {epoch}/{args.num_train_epochs}, step: {step}, Current loss: {loss.item():.2f}")
+            step_iterator.set_postfix(epoch=f'{epoch}/{args.num_train_epochs}', step=f'{step}', loss=f'{loss.item():.2f}')
 
             if args.gradient_accumulation_steps > 1:
                 loss /= args.gradient_accumulation_steps
@@ -292,7 +293,7 @@ def train(args, model, tokenizer):
                 global_step += 1
 
             if args.max_steps > 0 and global_step > args.max_steps:
-                epoch_iterator.close()
+                step_iterator.close()
                 break
 
         if args.max_steps > 0 and global_step > args.max_steps:
